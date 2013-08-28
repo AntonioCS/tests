@@ -21,7 +21,7 @@ bool wildcard(char *value, char *wcard) {
                     w++;
                     while (v < vsize) {
                         if (wcard[w] == value[v++]) {
-                            no_match = true;
+                            v--;
                             break;
                         }
                     }
