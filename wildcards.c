@@ -1,5 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 
-#include "wildcards.h"
+#define MULTICHAR '*'    
+#define ONECHAR '?'
 
 bool wildcard(char *value, char *wcard) {
     size_t vsize = strlen(value);

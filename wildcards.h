@@ -5,10 +5,6 @@
  * Created on 25 de Agosto de 2013, 21:11
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 
 #ifndef WILDCARD_SEARCH_H
 #define	WILDCARD_SEARCH_H
@@ -17,12 +13,7 @@
 extern "C" {
 #endif
 
-#define MULTICHAR '*'    
-#define ONECHAR '?'
-
 bool wildcard(char *,char *);
-
-
 
 #ifdef	__cplusplus
 }

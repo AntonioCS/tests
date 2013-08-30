@@ -29,6 +29,8 @@ int main(int argc, char** argv) {
     printf("Result: %d <- Should be true\n",wildcard("Hello World","Hello*"));
     printf("Result: %d <- Should be true\n",wildcard("Hello World","*Hello*"));
     printf("Result: %d <- Should be true\n",wildcard("Hello World","He?lo*"));
+    printf("Result: %d <- Should be true\n",wildcard("Hello World","Hello World"));
+    printf("Result: %d <- Should be false\n",wildcard("Hello World","Hello"));
     
     return 0;
 	
