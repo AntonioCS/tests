@@ -5,6 +5,7 @@
  * Created on 25 de Agosto de 2013, 21:11
  */
 
+#include <stdbool.h>
 
 #ifndef WILDCARD_SEARCH_H
 #define	WILDCARD_SEARCH_H
