@@ -29,11 +29,7 @@ bool wildcard(const char *value, char *wcard) {
     if (vsize == 0 &&  wsize == 0) {
         match = true;
     }
-    /*
-    else if (vsize == 0 && wcard[0] != '*') {
-        match = false;
-    }
-    */
+
     else {
         int v = 0;
         int w = 0;
@@ -54,9 +50,7 @@ bool wildcard(const char *value, char *wcard) {
                     match = true;
                     break;
                 }
-                else {
-                    
-                    
+                else {                                        
                     //search for the next char in the pattern that is not a ?
                     while (wcard[++w] == ONECHAR) {
                         lookAhead++;
@@ -72,8 +66,7 @@ bool wildcard(const char *value, char *wcard) {
                 }
             }
                   
-            else {
-                
+            else {                
                 if (!value[v] && !wcard[w]) {
                     if (searchMode) {
                         match = false;
@@ -91,7 +84,7 @@ bool wildcard(const char *value, char *wcard) {
                         w++;
                     }
                     
-                    if (currentValue == '\0') {
+                    else if (currentValue == '\0') {
                         match = false;
                         break;
                     }
