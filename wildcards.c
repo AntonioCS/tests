@@ -98,13 +98,8 @@ bool wildcard(const char *value, char *wcard) {
                     
                     v++;                    
                     continue;
-                }
-                else if (wcard[w] == ONECHAR && value[v] == '\0') {
-                    match = false;
-                    break;
-                }
-                
-                else if (wcard[w] != value[v] && wcard[w] != ONECHAR) {
+                }                
+                else if ((wcard[w] == ONECHAR && value[v] == '\0') || (wcard[w] != value[v] && wcard[w] != ONECHAR)) {
                     match = false;
                     break;
                 }
