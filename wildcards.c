@@ -23,31 +23,24 @@
 bool wildcard(const char *value, char *wcard) {
             
     int vsize = (int)strlen(value);
-    int wsize = (int)strlen(wcard);        
-    
-    //printf("Size value -> %d\n",vsize);
-    //printf("Size wcard -> %d\n",wsize);
-    
+    int wsize = (int)strlen(wcard);
     bool match = false;
-    /*
-    if (wsize <= 2) {        
-        if (*wcard == '*' ||
-            strcmp("?*",wcard) == 0 ||
-                strcmp("*?",wcard) == 0 ||
-                    (*wcard == '?' && vsize == 1)) {
-            match = true;
-        }        
+
+    if (vsize == 0 &&  wsize == 0) {
+        match = true;
     }
-    else */if (vsize == 0 && wcard[0] != '*') {
+    /*
+    else if (vsize == 0 && wcard[0] != '*') {
         match = false;
     }
- 
+    */
     else {
         int v = 0;
         int w = 0;
+        int lookAhead = 0;
         bool searchMode = false;
         char search = '\0';
-        char lookAhead = 0;
+        
                 
         while (true) {            
             if (wcard[w] == MULTICHAR) {
@@ -62,6 +55,8 @@ bool wildcard(const char *value, char *wcard) {
                     break;
                 }
                 else {
+                    
+                    
                     //search for the next char in the pattern that is not a ?
                     while (wcard[++w] == ONECHAR) {
                         lookAhead++;
@@ -79,27 +74,42 @@ bool wildcard(const char *value, char *wcard) {
                   
             else {
                 
-                if (!value[v] && wcard[w]) {
+                if (!value[v] && !wcard[w]) {
+                    if (searchMode) {
+                        match = false;
+                    }
                     break;
                 }
-                /*
-                if (!value[v] && !wcard[w]) { //Both are empty 
-                    match = true;
-                    break;
-                }                  
-                else */ 
-                if (searchMode) {                    
-                    if (value[++v+lookAhead] == search) {
+                if (searchMode) {
+                    char currentValue = value[v+lookAhead];
+                    if (currentValue == search) {
+                        match = true;
+                        
                         searchMode = false;
                         search = '\0';
-                        lookAhead = 0;
-                        
-                        continue;
+                        lookAhead = 0;   
+                        w++;
                     }
+                    
+                    if (currentValue == '\0') {
+                        match = false;
+                        break;
+                    }
+                    
+                    v++;                    
+                    continue;
                 }
+                else if (wcard[w] == ONECHAR && value[v] == '\0') {
+                    match = false;
+                    break;
+                }
+                
                 else if (wcard[w] != value[v] && wcard[w] != ONECHAR) {
                     match = false;
                     break;
+                }
+                else {
+                    match = true;
                 }
                 
                 w++;

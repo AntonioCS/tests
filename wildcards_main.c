@@ -17,48 +17,50 @@
 int main(int argc, char** argv) {
 
     
-    /*
-    printf("Result: %d <- Should be true\n",wildcard("Hello World","Hello*"));
-    printf("Result: %d <- Should be true\n",wildcard("Hello World","*Hello*"));
-    printf("Result: %d <- Should be true\n",wildcard("Hello World","He?lo*"));
-    printf("Result: %d <- Should be true\n",wildcard("Hello World","Hello World"));
-    printf("Result: %d <- Should be false\n",wildcard("Hello World","Hello"));
-    */
-    //positive tests
-    printf("Result: %d <- Should be true\n",wildcard("a","?"));  
-    printf("Result: %d <- Should be true\n",wildcard("ab","a?"));  
-    //printf("Result: %d <- Should be true\n",wildcard("ba","?a"));  
-    //printf("Result: %d <- Should be true\n",wildcard("Hello","*Hello"));
+    char positiveTests[][2][20] = {
+        {"",""},
+        {"a","?"},  
+        {"ab","a?"},  
+        {"ab","?b"},  
+        {"ba","?a"},  
+        {"Hello","*Hello"},
+        {"","*"},    
+        {" ","?"},
+        {"a","*"},   
+        {"ab","*"},
+        {"abc","*?"},
+        {"abc","?*"},  
+        {"abc","*abc"},
+        {"abc","*abc*"},
+        {"aXXXbc","*a*bc*"}
+    };
     
-    
-    //printf("Result: %d <- Should be false\n",wildcard("","?")); 
-    //printf("Result: %d <- Should be false\n",wildcard("Hello World","*Hello"));
-    //printf("Result: %d <- Should be true\n",wildcard("","*"));
-    /*
-    printf("Result: %d <- Should be true\n",wildcard(" ","?"));
-    printf("Result: %d <- Should be true\n",wildcard("a","*"));   
-    printf("Result: %d <- Should be true\n",wildcard("ab","*"));    
-    
-    printf("Result: %d <- Should be true\n",wildcard("abc","*?"));
-    printf("Result: %d <- Should be true\n",wildcard("abc","?*"));  
-    printf("Result: %d <- Should be true\n",wildcard("abc","*abc"));
-    printf("Result: %d <- Should be true\n",wildcard("abc","*abc*"));
-    printf("Result: %d <- Should be true\n",wildcard("aXXXbc","*a*bc*"));
+    char negativeTests[][2][20] = {
+        {"","*a"},
+        ///*
+        {"","a*"},
+        {"","?"}, 
+        {"a","*b*"},           
+        {"ab","b*a"},   
+        {"a","??"},
+        {"","*?"},
+        {"a","??*"},
+        {"abX","*abc"},
+        {"Xbc","*abc*"},
+        {"ac","*a*bc*"},
+        {"Hello World","Hello"}
+         //*/ 
+    };
+    ///*
+    printf("Postive tests\n");
+    for (int i = 0, t = (sizeof(positiveTests)/sizeof(positiveTests[0]));i<t;i++) {
+        printf("String %s - Pattern %s - Result -> %d (should be true)\n",positiveTests[i][0],positiveTests[i][1],wildcard(positiveTests[i][0],positiveTests[i][1]));        
+    }        
     //*/
-    // Negative Tests
-    /*
-    printf("Result: %d <- Should be false\n",wildcard("","*a"));
-    printf("Result: %d <- Should be false\n",wildcard("","a*"));
-    printf("Result: %d <- Should be false\n",wildcard("","?")); 
-    printf("Result: %d <- Should be false\n",wildcard("a","*b*"));   
-    printf("Result: %d <- Should be false\n",wildcard("ab","b*a"));   
-    printf("Result: %d <- Should be false\n",wildcard("a","??"));
-    printf("Result: %d <- Should be false\n",wildcard("","*?"));
-    printf("Result: %d <- Should be false\n",wildcard("a","??*"));
-    printf("Result: %d <- Should be false\n",wildcard("abX","*abc"));
-    printf("Result: %d <- Should be false\n",wildcard("Xbc","*abc*"));
-    printf("Result: %d <- Should be false\n",wildcard("ac","*a*bc*"));
-    //*/
+    printf("\nNegative tests\n");
+    for (int i = 0, t = (sizeof(negativeTests)/sizeof(negativeTests[0]));i<t;i++) {
+        printf("String %s - Pattern %s - Result -> %d (should be false)\n",negativeTests[i][0],negativeTests[i][1],wildcard(negativeTests[i][0],negativeTests[i][1]));
+    }        
     
     return 0;	
 }
