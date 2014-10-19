@@ -16,5 +16,9 @@ pointerTest: pointerTests.c
 
 structPassingTest: struct_passing_test.c
 	$(CC) $(CFLAGS) $@ $^
+	
+stringTest: string_read.c
+	$(CC) $(CFLAGS) $@ $^
+	
 clean:
 	
