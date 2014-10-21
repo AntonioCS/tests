@@ -76,11 +76,13 @@ int main(int argc, char** argv) {
 
     pstring teste = string_init();
     if (teste) {
-        FILE *fp = fopen("wildcards.c", "r");    
+        FILE *fp = fopen("string_read_test_file.txt", "r");    
 
         if (fp) {
             int c;
             while ((c = fgetc(fp)) != EOF) {
+                printf("%c\n", (char)c);
+                exit(-1);
                 string_add_char(teste, c);            
             }
 
