@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define STRING_INIT_SIZE 15
 
@@ -18,7 +19,7 @@ typedef struct string {
 } string, *pstring;
 
 pstring string_init(void);
-void string_add(pstring, char *);
+void string_add_char(pstring, int);
 void string_resize(pstring);
 void string_destroy(pstring);
 
@@ -41,16 +42,13 @@ pstring string_init() {
     return NULL;
 }
 
-void string_add(pstring string, char *p) {
-    while (*p) {
-        string->str[string->length++] = *p++;
-         
-        if (string->length == string->size) {
-            string_resize(string);
-        }
+void string_add_char(pstring string, int c) {
+    
+    if (string->length+1 == string->size) {
+        string_resize(string);
     }
     
-    string->str[string->length] = '\0';    
+    string->str[string->length++] = c;    
 }
 
 void string_resize(pstring string) {    
@@ -58,6 +56,7 @@ void string_resize(pstring string) {
     
     if (tmp_buffer) {
         string->str = tmp_buffer;
+        memset(string->str + string->length, 0, string->size - string->length);
     }
     else {
         perror("Unable to reallocate memory");
@@ -82,7 +81,7 @@ int main(int argc, char** argv) {
         if (fp) {
             int c;
             while ((c = fgetc(fp)) != EOF) {
-                string_add(teste, (char *)&c);            
+                string_add_char(teste, c);            
             }
 
             printf("Dados: %s\n", teste->str);
