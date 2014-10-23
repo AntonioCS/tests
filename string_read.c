@@ -20,8 +20,10 @@ typedef struct string {
 
 pstring string_init(void);
 void string_add_char(pstring, int);
+void string_add_str(pstring, char *);
 void string_resize(pstring);
 void string_destroy(pstring);
+void string_clear(pstring);
 
 pstring string_init() {
     pstring newstr = malloc(sizeof(string));
@@ -51,6 +53,16 @@ void string_add_char(pstring string, int c) {
     string->str[string->length++] = c;    
 }
 
+void string_add_str(pstring string, char *str) {    
+    int len = strlen(str);
+    
+    if (string->length + len >= string->size) {
+        string_resize(string);
+    }
+    
+    memcpy(string->str + string->length, str, len);    
+}
+
 void string_resize(pstring string) {    
     char *tmp_buffer = realloc(string->str, (string->size += string->increase_by));
     
@@ -69,10 +81,22 @@ void string_destroy(pstring string) {
     free(string);
 }
 
+void string_clear(pstring string) {
+    string->size = 0;
+    string->length = 0;
+    string->increase_by = STRING_INIT_SIZE;
+    
+    string_resize(string);    
+}
+
 /*
  * 
  */
 int main(int argc, char** argv) {
+    
+    char bla[] = "a";
+    printf("Size: %d\n", sizeof(bla));
+    exit(-1);
 
     pstring teste = string_init();
     if (teste) {
@@ -80,18 +104,21 @@ int main(int argc, char** argv) {
 
         if (fp) {
             int c;
-            while ((c = fgetc(fp)) != EOF) {
-                printf("%c\n", (char)c);
-                exit(-1);
+            while ((c = fgetc(fp)) != EOF) {                
                 string_add_char(teste, c);            
             }
+            
+            string_add_str(teste, "TERMINOU esta merda :D");
 
+            
+            
             printf("Dados: %s\n", teste->str);
             printf("Size: %d\n", teste->size);
             printf("Length: %d\n", teste->length);
         }
 
-        string_destroy(teste);
+        string_clear(teste);
+        //string_destroy(teste);
     }
     
     return (EXIT_SUCCESS);
