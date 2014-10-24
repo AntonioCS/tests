@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define STRING_INIT_SIZE 15
 
@@ -24,9 +25,11 @@ void string_add_str(pstring, char *);
 void string_resize(pstring);
 void string_destroy(pstring);
 void string_clear(pstring);
+void string_is_resize_needed(pstring, int);
 
 pstring string_init() {
     pstring newstr = malloc(sizeof(string));
+    
     
     if (newstr != NULL) {
         newstr->str = calloc(STRING_INIT_SIZE, sizeof(char));
@@ -46,9 +49,9 @@ pstring string_init() {
 
 void string_add_char(pstring string, int c) {
     
-    if (string->length+1 == string->size) {
+    if (string_is_resize_needed(string, 1)) {
         string_resize(string);
-    }
+    } 
     
     string->str[string->length++] = c;    
 }
@@ -56,11 +59,15 @@ void string_add_char(pstring string, int c) {
 void string_add_str(pstring string, char *str) {    
     int len = strlen(str);
     
-    if (string->length + len >= string->size) {
+    while (string_is_resize_needed(string, len)) {
         string_resize(string);
     }
     
     memcpy(string->str + string->length, str, len);    
+}
+
+bool string_is_resize_needed(pstring s, int len_to_add) {        
+    return (s->length + len_to_add) >= s->size;
 }
 
 void string_resize(pstring string) {    
@@ -118,7 +125,7 @@ int main(int argc, char** argv) {
         }
 
         string_clear(teste);
-        //string_destroy(teste);
+        string_destroy(teste);
     }
     
     return (EXIT_SUCCESS);
