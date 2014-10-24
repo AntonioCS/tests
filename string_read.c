@@ -12,6 +12,8 @@
 
 #define STRING_INIT_SIZE 15
 
+//http://www.cprogramming.com/tutorial/unicode.html
+
 typedef struct string {
     char *str;
     int size;
