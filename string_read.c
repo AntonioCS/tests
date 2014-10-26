@@ -1,5 +1,5 @@
 /* 
- * File:   string_read.c
+ * File:   mstash_str_read.c
  * Author: antoniocs
  *
  * Created on 19 de Outubro de 2014, 22:27
@@ -10,114 +10,151 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define STRING_INIT_SIZE 15
+#define MSTASH_STRING_INIT_SIZE 15
+#define MSTASH_READ_FILE_BUFFER_SIZE 1024
 
 //http://www.cprogramming.com/tutorial/unicode.html
 
-typedef struct string {
+typedef struct mstash_str {
     char *str;
+
     int size;
     int length;
+
     int increase_by; //will have the default of 15 but can be customized per instance
-} string, *pstring;
+} mstash_str, *pmstash_str;
 
-pstring string_init(void);
-void string_add_char(pstring, int);
-void string_add_str(pstring, char *);
-void string_resize(pstring);
-void string_destroy(pstring);
-void string_clear(pstring);
-void string_is_resize_needed(pstring, int);
+static pmstash_str mstash_str_init(void);
+static void mstash_str_add_char(pmstash_str, int);
+static void mstash_str_add_str(pmstash_str, char *);
+static void mstash_str_add_str_num(pmstash_str, char *, int);
+static void mstash_str_resize(pmstash_str);
+static void mstash_str_destroy(pmstash_str);
+static void mstash_str_clear(pmstash_str);
+static bool mstash_str_is_resize_needed(pmstash_str, int);
+static void mstash_str_from_file(pmstash_str, const char *);
 
-pstring string_init() {
-    pstring newstr = malloc(sizeof(string));
-    
-    
+pmstash_str mstash_str_init() {
+    pmstash_str newstr = malloc(sizeof (mstash_str));
+
     if (newstr != NULL) {
-        newstr->str = calloc(STRING_INIT_SIZE, sizeof(char));
+        newstr->str = calloc(MSTASH_STRING_INIT_SIZE, sizeof (char));
         if (newstr->str == NULL) {
             perror("Unable to allocate space for string");
             exit(-1);
         }
 
-        newstr->increase_by = newstr->size = STRING_INIT_SIZE;
+        newstr->increase_by = newstr->size = MSTASH_STRING_INIT_SIZE;
         newstr->length = 0;
 
         return newstr;
     }
-    
+
     return NULL;
 }
 
-void string_add_char(pstring string, int c) {
-    
-    if (string_is_resize_needed(string, 1)) {
-        string_resize(string);
-    } 
-    
-    string->str[string->length++] = c;    
-}
+void mstash_str_add_char(pmstash_str string, int c) {
 
-void string_add_str(pstring string, char *str) {    
-    int len = strlen(str);
-    
-    while (string_is_resize_needed(string, len)) {
-        string_resize(string);
+    if (mstash_str_is_resize_needed(string, 1)) {
+        mstash_str_resize(string);
     }
-    
-    memcpy(string->str + string->length, str, len);    
+
+    string->str[string->length++] = c;
 }
 
-bool string_is_resize_needed(pstring s, int len_to_add) {        
+void mstash_str_add_str(pmstash_str s, char *str) {
+    int len = strlen(str);
+    mstash_str_add_str_num(s, str, len);
+}
+
+void mstash_str_add_str_num(pmstash_str s, char *str, int length) {
+    while (mstash_str_is_resize_needed(s, length)) {
+        mstash_str_resize(s);
+    }
+
+    memcpy(s->str + s->length, str, length);
+    s->length += length;
+}
+
+bool mstash_str_is_resize_needed(pmstash_str s, int len_to_add) {
     return (s->length + len_to_add) >= s->size;
 }
 
-void string_resize(pstring string) {    
+void mstash_str_resize(pmstash_str string) {
     char *tmp_buffer = realloc(string->str, (string->size += string->increase_by));
-    
+
     if (tmp_buffer) {
         string->str = tmp_buffer;
         memset(string->str + string->length, 0, string->size - string->length);
-    }
-    else {
+    } else {
         perror("Unable to reallocate memory");
         exit(-1);
     }
 }
 
-void string_destroy(pstring string) {
-    free(string->str);    
-    free(string);
+void mstash_str_destroy(pmstash_str s) {
+    free(s->str);
+    free(s);
 }
 
-void string_clear(pstring string) {
-    string->size = 0;
-    string->length = 0;
-    string->increase_by = STRING_INIT_SIZE;
-    
-    string_resize(string);    
+void mstash_str_clear(pmstash_str s) {
+    s->size = 0;
+    s->length = 0;
+    s->increase_by = MSTASH_STRING_INIT_SIZE;
+
+    mstash_str_resize(s);
+}
+
+void mstash_str_from_file(pmstash_str s, const char *filename) {
+    FILE *fp = fopen(filename, "r");
+
+    if (fp != NULL) {
+        char buffer[MSTASH_READ_FILE_BUFFER_SIZE] = {'\0'};
+        int buf_size = MSTASH_READ_FILE_BUFFER_SIZE - 1;
+        int inc_by = s->increase_by;
+        size_t read;
+
+        s->increase_by = MSTASH_READ_FILE_BUFFER_SIZE;
+
+        do {
+            read = fread(buffer, 1, buf_size, fp);
+            mstash_str_add_str_num(s, buffer, read);                       
+        } while (read == buf_size);
+
+        s->increase_by = inc_by;
+        fclose(fp);
+    }
 }
 
 /*
  * 
  */
 int main(int argc, char** argv) {
-    
-    char bla[] = "a";
-    printf("Size: %d\n", sizeof(bla));
-    exit(-1);
 
-    pstring teste = string_init();
+    //char bla[] = "鷜鷙a";
+    //printf("Size: %lu\n", sizeof(bla));
+    //exit(-1);
+
+    pmstash_str teste = mstash_str_init();
+    //mstash_str_from_file(teste, "string_read_test_file.txt");
+    //mstash_str_from_file(teste, "string_read_chinese_small.txt");
+    mstash_str_from_file(teste, "html_test_file.htm");
+
+    printf("Dados: %s\n", teste->str);
+    printf("Size: %d\n", teste->size);
+    printf("Length: %d\n", teste->length);
+
+    /*
     if (teste) {
         FILE *fp = fopen("string_read_test_file.txt", "r");    
 
         if (fp) {
             int c;
             while ((c = fgetc(fp)) != EOF) {                
-                string_add_char(teste, c);            
+                mstash_str_add_char(teste, c);            
             }
             
-            string_add_str(teste, "TERMINOU esta merda :D");
+            mstash_str_add_str(teste, "TERMINOU esta merda :D");
 
             
             
@@ -126,10 +163,10 @@ int main(int argc, char** argv) {
             printf("Length: %d\n", teste->length);
         }
 
-        string_clear(teste);
-        string_destroy(teste);
+        mstash_str_clear(teste);
+        mstash_str_destroy(teste);
     }
-    
+    //*/
     return (EXIT_SUCCESS);
 }
 
